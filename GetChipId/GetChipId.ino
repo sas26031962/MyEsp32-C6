@@ -13,6 +13,7 @@ with help from Cicicok
 */
 
 #define DELAY 350
+#define INITIAL_DELAY 2000
 
 uint32_t chipId = 0;
 int Counter = 0;
@@ -21,8 +22,9 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT); // GPIO8 - встроенный LED
   
   Serial.begin(115200);
-  while(!Serial);
-  
+  //while(!Serial);
+  delay(INITIAL_DELAY);
+
   digitalWrite(LED_BUILTIN, HIGH);
   delay(DELAY);
   digitalWrite(LED_BUILTIN, LOW);
