@@ -41,9 +41,9 @@ void setup() {
     if (++attempts > 30) { // Таймаут 15 секунд
       Serial.println("\nОшибка подключения! Перезагрузка...");
       ESP.restart();
-      
+
     }
-    leds[0] = CRGB::Red; FastLED.show(); 
+    leds[0] = CRGB::Orange; FastLED.show(); 
   }
   leds[0] = CRGB::Green; FastLED.show(); 
 
