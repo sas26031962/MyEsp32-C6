@@ -1,0 +1,85 @@
+MicroPython активно поддерживает чип ESP32-C6, и для работы с ним доступны как официальные англоязычные материалы, так и русскоязычные сообщества. Ниже приведён список основных источников с пояснениями.
+
+---
+
+## 📘 Официальная документация (английский)
+
+### 1. Quick reference for ESP32
+**Ссылка:** [https://docs.micropython.org/en/v1.26.0/esp32/quickref.html](https://docs.micropython.org/en/v1.26.0/esp32/quickref.html)   
+**Описание:** Краткий справочник по всем ESP32‑совместимым чипам, включая ESP32‑C6. Содержит примеры для:
+- управления частотой CPU, GPIO, ШИМ, АЦП;
+- работы с Wi-Fi (station, AP);
+- использования модуля `machine`;
+- чтения внутренней температуры (для C6 — `esp32.mcu_temperature()`);
+- настройки UART, I2C, SPI.
+
+### 2. MicroPython tutorial for ESP32
+**Ссылка:** [https://docs.micropython.org/en/latest/esp32/tutorial/index.html](https://docs.micropython.org/en/latest/esp32/tutorial/index.html)  
+**Описание:** Пошаговое руководство по установке прошивки, работе с REPL, подключению к Wi‑Fi, управлению пинами и периферией.
+
+### 3. GitHub – обсуждения и issues
+- **Обсуждение UART на XIAO ESP32C6:** [https://github.com/orgs/micropython/discussions/17579](https://github.com/orgs/micropython/discussions/17579)   
+  Показывает, что на некоторых платах пины UART0 (GPIO16/17) могут иметь нестандартную логику из‑за опции `MICROPY_HW_ENABLE_UART_REPL`. Полезно для отладки последовательного порта.
+- **Общий репозиторий MicroPython:** [https://github.com/micropython/micropython](https://github.com/micropython/micropython)  
+  В папке `ports/esp32` можно найти код поддержки ESP32‑C6.
+
+### 4. Технический обзор порта ESP32 (DeepWiki)
+**Ссылка:** [https://deepwiki.com/micropython/micropython/4.3-esp32-port](https://deepwiki.com/micropython/micropython/4.3-esp32-port)   
+**Описание:** Глубокий разбор архитектуры MicroPython на ESP32: инициализация, управление памятью, реализация UART, SPI, I2C, Wi‑Fi, BLE, USB. Отдельно выделена поддержка ESP32‑C6.
+
+---
+
+## 🇷🇺 Русскоязычные материалы
+
+Официальной документации на русском языке нет, но можно использовать следующие ресурсы:
+
+### 1. Переводы через онлайн‑сервисы
+- Страницы официальной документации можно переводить через **Google Translate** или **Яндекс.Переводчик** – качество достаточное для понимания технических терминов.
+
+### 2. Статьи и форумы
+- **Habr:** Поиск по запросу «MicroPython ESP32‑C6» даёт несколько статей с примерами подключения датчиков, настройки Wi‑Fi и UART.
+- **Telegram-чаты:**  
+  - «MicroPython на русском» (@micropython_ru)  
+  - «ESP32 Russian Community» (@esp32ru)  
+  – там можно задать вопросы и найти готовые фрагменты кода.
+
+### 3. Блоги и репозитории
+- **GitHub Gist** и личные блоги разработчиков часто содержат русскоязычные заметки с примерами для ESP32‑C6.
+
+---
+
+## 💡 Ключевые особенности MicroPython для ESP32‑C6
+
+| Особенность | Пояснение |
+|-------------|-----------|
+| **USB Serial/JTAG** | Встроенный USB‑порт выступает как последовательный порт (CDC) и интерфейс отладки. В MicroPython REPL доступен через `UART(0)` или как `sys.stdin`/`sys.stdout`. |
+| **Пины UART** | По умолчанию UART0 использует GPIO16 (TX) и GPIO17 (RX). В некоторых сборках эти пины могут быть зарезервированы для REPL – проверяйте документацию платы.  |
+| **Датчик температуры** | В отличие от оригинального ESP32, на C6 температура возвращается в градусах Цельсия через `esp32.mcu_temperature()`.  |
+| **Отсутствие ULP** | Сопроцессор сверхнизкого потребления (ULP) на ESP32‑C6 недоступен – вызов `esp32.ULP()` вызовет ошибку.  |
+| **Wi‑Fi и BLE** | Поддерживаются оба интерфейса; настройка выполняется через модуль `network`.  |
+
+---
+
+## 📦 Пример: подключение к Wi‑Fi и UART
+
+```python
+import network
+import machine
+import time
+
+# Подключение к Wi‑Fi
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect("SSID", "PASSWORD")
+while not wlan.isconnected():
+    time.sleep(0.5)
+print("Connected:", wlan.ifconfig())
+
+# Настройка UART1 на пинах GPIO0 (RX) и GPIO1 (TX)
+uart = machine.UART(1, baudrate=115200, tx=1, rx=0)
+uart.write("Hello from ESP32-C6!\n")
+```
+
+---
+
+Если вам нужны примеры для конкретной периферии (I2C, SPI, PWM) или описание процесса прошивки, уточните – я дополню ответ.
